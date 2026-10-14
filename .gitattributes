@@ -1,0 +1,19 @@
+# Normalise line endings so the repository is consistent across Windows,
+# macOS and Linux. Text files are stored with LF in the repository; Windows
+# batch/PowerShell scripts keep CRLF as the platform expects.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files: never touch them.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.xlsx binary
+*.zip binary
