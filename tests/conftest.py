@@ -140,6 +140,46 @@ def tmp_xml(tmp_path: Path) -> Path:
 
 
 @pytest.fixture()
+def tmp_eml(tmp_path: Path) -> Path:
+    from email.message import EmailMessage
+
+    message = EmailMessage()
+    message["Subject"] = "Q3 shipping schedule"
+    message["From"] = "Ada Lovelace <ada@example.com>"
+    message["To"] = "ops@example.com, Grace Hopper <grace@example.com>"
+    message["Date"] = "Tue, 14 Oct 2025 09:30:00 +0700"
+    message["Message-ID"] = "<q3-schedule@example.com>"
+    message.set_content(
+        "Hi team,\n\nThe vessel leaves Batu Ampar on Friday.\n\n> Old thread line\n"
+    )
+    message.add_alternative("<p>Hi team,</p><p>HTML <b>version</b>.</p>", subtype="html")
+    message.add_attachment(
+        b"col1,col2\n1,2\n", maintype="text", subtype="csv", filename="manifest.csv"
+    )
+    path = tmp_path / "schedule.eml"
+    path.write_bytes(message.as_bytes())
+    return path
+
+
+@pytest.fixture()
+def tmp_eml_html_only(tmp_path: Path) -> Path:
+    from email.message import EmailMessage
+
+    message = EmailMessage()
+    message["Subject"] = "Newsletter"
+    message["From"] = "news@example.com"
+    message.set_content(
+        "<html><head><style>p{color:red}</style></head><body>"
+        "<h1>Weekly</h1><ul><li>First item</li><li>Second item</li></ul>"
+        "<p>Fish &amp; chips</p></body></html>",
+        subtype="html",
+    )
+    path = tmp_path / "newsletter.eml"
+    path.write_bytes(message.as_bytes())
+    return path
+
+
+@pytest.fixture()
 def tmp_docx(tmp_path: Path) -> Path:
     docx = pytest.importorskip("docx")
     document = docx.Document()

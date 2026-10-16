@@ -26,6 +26,7 @@ def default_converters() -> list[BaseConverter]:
     # modules whose optional dependencies are not installed.
     from .csv import CsvConverter
     from .docx import DocxConverter
+    from .eml import EmlConverter
     from .html import HtmlConverter
     from .json import JsonConverter
     from .pdf import PdfConverter
@@ -40,6 +41,7 @@ def default_converters() -> list[BaseConverter]:
         PptxConverter(),
         XlsxConverter(),
         CsvConverter(),
+        EmlConverter(),
         HtmlConverter(),
         JsonConverter(),
         XmlConverter(),

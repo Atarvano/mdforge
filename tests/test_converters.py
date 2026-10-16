@@ -126,6 +126,79 @@ def test_invalid_xml_raises(engine: ConversionEngine, tmp_path: Path) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# EML
+# --------------------------------------------------------------------------- #
+
+
+def test_eml_converter_structure(engine: ConversionEngine, tmp_eml: Path) -> None:
+    body = engine.convert(tmp_eml).markdown
+    assert "# Q3 shipping schedule" in body
+    assert "| From | Ada Lovelace <ada@example.com> |" in body
+    assert "The vessel leaves Batu Ampar on Friday." in body
+    assert "> Old thread line" in body
+    assert "HTML" not in body.split("## Attachments")[0]
+    assert "## Attachments" in body
+    assert "| manifest.csv | text/csv |" in body
+
+
+def test_eml_metadata(engine: ConversionEngine, tmp_eml: Path) -> None:
+    result = engine.convert(tmp_eml)
+    assert result.metadata["title"] == "Q3 shipping schedule"
+    assert result.metadata["from"] == "ada@example.com"
+    assert result.metadata["to"] == ["ops@example.com", "grace@example.com"]
+    assert result.metadata["date"] == "2025-10-14T09:30:00+07:00"
+    assert result.metadata["message_id"] == "<q3-schedule@example.com>"
+    assert result.metadata["body_format"] == "plain"
+    assert result.metadata["attachment_count"] == 1
+
+
+def test_eml_prefer_html(engine: ConversionEngine, tmp_eml: Path) -> None:
+    result = engine.convert(tmp_eml, prefer_html=True)
+    assert result.metadata["body_format"] == "html"
+    assert "**version**" in result.markdown
+
+
+def test_eml_html_only_uses_renderer(engine: ConversionEngine, tmp_eml_html_only: Path) -> None:
+    pytest.importorskip("bs4")
+    result = engine.convert(tmp_eml_html_only)
+    assert "# Weekly" in result.markdown
+    assert "- First item" in result.markdown
+    assert "color:red" not in result.markdown
+    assert result.warnings == []
+
+
+def test_eml_html_only_without_bs4_warns(
+    engine: ConversionEngine, tmp_eml_html_only: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from mdforge.converters import eml
+
+    monkeypatch.setattr(eml, "has_dependency", lambda _module: False)
+    result = engine.convert(tmp_eml_html_only)
+    assert result.metadata["body_format"] == "html-stripped"
+    assert "First item\nSecond item" in result.markdown
+    assert "Fish & chips" in result.markdown
+    assert "<p>" not in result.markdown
+    assert any("mdforge[html]" in warning for warning in result.warnings)
+
+
+def test_eml_extract_metadata_reads_headers(tmp_eml: Path) -> None:
+    from mdforge.converters.eml import EmlConverter
+
+    metadata = EmlConverter().extract_metadata(tmp_eml)
+    assert metadata["title"] == "Q3 shipping schedule"
+    assert "body_format" not in metadata
+
+
+def test_eml_without_headers_raises(engine: ConversionEngine, tmp_path: Path) -> None:
+    from mdforge.exceptions import ConversionError
+
+    path = tmp_path / "not-mail.eml"
+    path.write_bytes(b"just some text without headers\n")
+    with pytest.raises(ConversionError):
+        engine.convert(path)
+
+
+# --------------------------------------------------------------------------- #
 # HTML
 # --------------------------------------------------------------------------- #
 

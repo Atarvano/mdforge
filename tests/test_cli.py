@@ -202,7 +202,7 @@ def test_formats_command_json() -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     names = {row["name"] for row in payload}
-    assert {"pdf", "docx", "csv", "html", "json", "xml", "text"} <= names
+    assert {"pdf", "docx", "csv", "eml", "html", "json", "xml", "text"} <= names
 
 
 @pytest.mark.parametrize("command", ["convert", "batch", "chunk", "formats"])

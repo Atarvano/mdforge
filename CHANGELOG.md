@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `eml` converter for saved email messages: subject heading, a From/To/Cc/Date
+  table, the plain-text body (HTML-only mail goes through the HTML renderer),
+  and an attachment list. Uses only the standard library.
 - Entry-point plugin discovery: third-party packages can register converters
   under the `mdforge.converters` group and they are loaded automatically by
   `ConversionEngine()`. New public helper `load_entry_point_converters()`, and a

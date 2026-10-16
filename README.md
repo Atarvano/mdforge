@@ -189,6 +189,7 @@ subsections. The default (`0`) keeps the heading tree exactly as written.
 | `csv` | `.csv`, `.tsv` | — | Dialect sniffing, row/column caps with warnings |
 | `html` | `.html`, `.htm`, `.xhtml` | `html` | Content selectors, nested lists, tables, code fences, relative-link absolutisation |
 | `json` | `.json`, `.jsonl`, `.ndjson` | — | Raw fence mode, or `flatten` mode with a key outline + record table |
+| `eml` | `.eml` | — | Headers table, plain-text body (HTML-only mail rendered as Markdown), attachment list |
 | `xml` | `.xml`, `.svg`, `.rss`, `.atom`, … | — | Pretty-printed with root tag and element count |
 | `text` | `.txt`, `.md`, `.rst`, `.log` | — | reST heading promotion, encoding detection |
 
